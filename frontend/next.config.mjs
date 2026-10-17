@@ -2,19 +2,21 @@
 // Next.js rewrites proxy them to BACKEND_URL, so the browser never needs CORS
 // and the backend URL is never hard-coded in the client bundle.
 const backend = (process.env.BACKEND_URL || 'http://localhost:8000').replace(/\/$/, '');
+const pagesExport = process.env.FREE_PAGES_EXPORT === '1';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  async rewrites() {
+  ...(pagesExport ? { output: 'export', distDir: '.next-pages' } : {}),
+  ...(!pagesExport ? { async rewrites() {
     return [
       { source: '/api/:path*', destination: `${backend}/api/:path*` },
       { source: '/backend-health', destination: `${backend}/health` },
     ];
-  },
+  } } : {}),
   // A single analysis can take a while when the AI provider is slow or retrying;
   // the default rewrite proxy timeout (30 s) would otherwise surface as a 500 in the UI.
-  experimental: { proxyTimeout: 600_000 },
+  experimental: { proxyTimeout: 600_000, ...(pagesExport ? { cpus: 2 } : {}) },
   eslint: { ignoreDuringBuilds: true },
 };
 

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Nav from '@/components/Nav';
 import { LanguageProvider } from '@/components/LanguageProvider';
+import FreeDemoBanner from '@/components/FreeDemoBanner';
 
 export const metadata: Metadata = {
   title: 'FreightSentinel',
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <LanguageProvider>
           <Nav />
-          <main className="main">{children}</main>
+          <main className="main"><FreeDemoBanner />{children}</main>
         </LanguageProvider>
       </body>
     </html>

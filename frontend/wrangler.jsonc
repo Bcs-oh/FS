@@ -1,0 +1,7 @@
+{
+  "name": "freightsentinel-demo",
+  "pages_build_output_dir": "./out",
+  "compatibility_date": "2026-09-01"
+  // BACKEND_URL is a runtime Pages Functions variable: https://your-service.onrender.com
+  // Keep API keys in the Render backend environment only.
+}

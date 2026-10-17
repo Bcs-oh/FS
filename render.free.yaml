@@ -1,0 +1,55 @@
+# Optional personal trial Blueprint: select render.free.yaml explicitly.
+# Create a NEW service from Bcs-oh/FS; do not update the existing team service.
+# No deployment, account ownership or billing status has been verified here.
+#
+# IMPORTANT: select a target workspace with NO payment method before deploying.
+# Render Free can bill bandwidth/build overage when a payment method is present.
+# This file cannot guarantee zero charges while workspace billing remains enabled.
+# Free instances may sleep, restart or be replaced; all runtime data is temporary.
+#
+# AI is deliberately disabled, with no API keys requested or required. This mode
+# does NOT classify emails or compare documents, and has no rule-based fallback.
+# Existing results, human decisions, uploads and generated files can be lost when
+# the instance is replaced. Train experimental classifiers locally, not here.
+services:
+  - type: web
+    name: freightsentinel-personal-free
+    runtime: python
+    plan: free
+    # Keep the repository root so backend/ and the tracked data/ ZIP are present.
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: false
+    # No persistent disk: Free service runtime files are ephemeral.
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: CACHE_DIR
+        value: /tmp/freightsentinel-cache
+      - key: DATA_DIR
+        value: /tmp/freightsentinel-data
+      - key: BATCH_CONCURRENCY
+        value: "1"
+      - key: AI_PROVIDER
+        value: none
+      - key: AI_MODE
+        value: "off"
+      - key: AI_API_KEY
+        value: ""
+      - key: AI_MODEL
+        value: ""
+      - key: AI_FALLBACK_MODEL
+        value: none
+      - key: AI_SENIOR_PROVIDER
+        value: none
+      - key: AI_SENIOR_API_KEY
+        value: ""
+      - key: AI_SENIOR_MODEL
+        value: ""
+      - key: AI_SENIOR_FALLBACK_MODEL
+        value: none
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: AUTOMATION_POLICY
+        value: standard

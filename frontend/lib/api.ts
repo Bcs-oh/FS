@@ -1,5 +1,6 @@
 // Small fetch helper + shared types for the FreightSentinel API.
 // All calls go to same-origin /api/* which next.config.mjs proxies to the backend.
+import { FREE_DEMO, FREE_DEMO_ANALYSIS_MESSAGE, FREE_DEMO_WAKE_MESSAGE, isAnalysisRequest } from '@/lib/freeDemo';
 
 export type Category = 'BL_COMPARISON' | 'SI_REQUEST' | 'INVOICE_QUERY' | 'GENERAL' | 'SPAM';
 export type Status = 'OK' | 'MISMATCH' | 'NEEDS_REVIEW';
@@ -146,11 +147,18 @@ export class ApiError extends Error {
 }
 
 export async function api<T = any>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
+  if (FREE_DEMO && init?.method?.toUpperCase() === 'POST' && isAnalysisRequest(path)) {
+    throw new ApiError(403, FREE_DEMO_ANALYSIS_MESSAGE);
+  }
+  let res: Response;
+  try { res = await fetch(path, {
     ...init,
     headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
     cache: 'no-store',
-  });
+  }); } catch (error) {
+    if (FREE_DEMO) throw new ApiError(503, FREE_DEMO_WAKE_MESSAGE);
+    throw error;
+  }
   if (!res.ok) {
     let detail = res.statusText;
     try {
@@ -159,7 +167,11 @@ export async function api<T = any>(path: string, init?: RequestInit): Promise<T>
     } catch {
       /* ignore */
     }
-    throw new ApiError(res.status, detail || `HTTP ${res.status}`);
+    const hint = FREE_DEMO && [502, 503, 504].includes(res.status) ? ` ${FREE_DEMO_WAKE_MESSAGE}` : '';
+    throw new ApiError(res.status, (detail || `HTTP ${res.status}`) + hint);
+  }
+  if (FREE_DEMO && !(res.headers.get('content-type') || '').includes('application/json')) {
+    throw new ApiError(503, FREE_DEMO_WAKE_MESSAGE);
   }
   return (await res.json()) as T;
 }

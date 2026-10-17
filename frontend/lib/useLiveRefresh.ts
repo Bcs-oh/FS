@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
+import { FREE_DEMO } from '@/lib/freeDemo';
 
 /**
  * One poller, shared by every component on the page, watching the batch run.
@@ -65,6 +66,9 @@ async function tick() {
 }
 
 function subscribe(fn: Listener) {
+  // No analysis can run in this build, so polling would only spend the free quota
+  // and keep an otherwise idle Render service awake. Pages still load on entry.
+  if (FREE_DEMO) return () => {};
   listeners.add(fn);
   if (!timer) timer = setTimeout(tick, 300);
   return () => {

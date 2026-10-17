@@ -7,6 +7,7 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { api, post, fmtTime, REVIEW_LABEL } from '@/lib/api';
 import { useLiveRefresh } from '@/lib/useLiveRefresh';
 import { DefectsByField } from '@/components/DefectsByField';
+import { FREE_DEMO, FREE_DEMO_ANALYSIS_MESSAGE } from '@/lib/freeDemo';
 
 export default function TodayWorkCentre() {
   const router = useRouter();
@@ -62,7 +63,7 @@ export default function TodayWorkCentre() {
         </div>
         <div className="toolbar" style={{ marginBottom: 0 }}>
           <Link href="/inbox" className="btn">Open Smart Inbox</Link>
-          <button className="btn btn-primary" onClick={startRun} disabled={starting || run?.status === 'running'}>
+          <button className="btn btn-primary" onClick={startRun} disabled={FREE_DEMO || starting || run?.status === 'running'} title={FREE_DEMO ? FREE_DEMO_ANALYSIS_MESSAGE : undefined}>
             {run?.status === 'running'
               ? `Batch run ${run.done} / ${run.total}…`
               : s.analysed === 0 ? 'Analyse the full inbox' : 'Analyse remaining emails'}
@@ -70,7 +71,7 @@ export default function TodayWorkCentre() {
         </div>
       </div>
 
-      {guide ? (
+      {guide && !FREE_DEMO ? (
         <div className="guide">
           <div className="guide-steps">
             {s.analysed === 0 ? (
@@ -119,7 +120,7 @@ export default function TodayWorkCentre() {
             <Link href="/review" className="small">Open the full review queue →</Link>
           </div>
           {data.priority.length === 0 ? (
-            <div className="empty">{s.analysed === 0 ? 'Nothing analysed yet. Start with the Smart Inbox or run the full inbox.' : 'No open risk cases. Everything is either safe or already handled.'}</div>
+            <div className="empty">{s.analysed === 0 ? FREE_DEMO ? 'No analysis results. Open the Smart Inbox to read the original demo emails and attachment text.' : 'Nothing analysed yet. Start with the Smart Inbox or run the full inbox.' : 'No open risk cases. Everything is either safe or already handled.'}</div>
           ) : (
             <div className="table-wrap">
               <table>

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { api, post } from '@/lib/api';
 import { useLanguage } from '@/components/LanguageProvider';
 import { useRunPulse, useLiveRefresh } from '@/lib/useLiveRefresh';
+import { FREE_DEMO, FREE_DEMO_ANALYSIS_MESSAGE } from '@/lib/freeDemo';
 
 const LINKS = [
   { href: '/', label: 'Today' },
@@ -32,6 +33,7 @@ export default function Nav() {
 
   useEffect(() => {
     load();
+    if (FREE_DEMO) return;
     // These counters only change because a run changed them, so the run itself is the
     // trigger. The slow timer is a backstop for a policy change made in another tab.
     const t = setInterval(load, 20000);
@@ -50,7 +52,7 @@ export default function Nav() {
     }
   };
 
-  const aiOn = !!health?.ai?.enabled;
+  const aiOn = !FREE_DEMO && !!health?.ai?.enabled;
   return (
     <header className="topbar">
       <div className="topbar-inner">
@@ -82,10 +84,10 @@ export default function Nav() {
                     ? `${health.ai.provider} / ${health.ai.model}` +
                       (health.ai.fallback_model ? ` (fallback ${health.ai.fallback_model})` : '') +
                       (health.ai_senior?.enabled ? ` · senior review: ${health.ai_senior.model}` : ' · senior review off')
-                    : 'AI is unavailable; analysis requires a working provider'
+                    : FREE_DEMO ? FREE_DEMO_ANALYSIS_MESSAGE : 'AI is unavailable; analysis requires a working provider'
                 }
               >
-                <span className={`chip-dot ${aiOn ? '' : 'off'}`} /> AI {aiOn ? health.ai.provider : 'unavailable'}
+                <span className={`chip-dot ${aiOn ? '' : 'off'}`} /> AI {aiOn ? health.ai.provider : FREE_DEMO ? 'off · free demo' : 'unavailable'}
                 {aiOn && health.ai_senior?.enabled ? ' + senior' : ''}
               </span>
               <button className="chip chip-dark" onClick={togglePolicy} title="Click to switch the automation policy" style={{ cursor: 'pointer' }}>

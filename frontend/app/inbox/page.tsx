@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CategoryBadge, StatusBadge } from '@/components/StatusBadge';
 import { api, post, pct, type EmailRow } from '@/lib/api';
 import { useLiveRefresh } from '@/lib/useLiveRefresh';
+import { FREE_DEMO, FREE_DEMO_ANALYSIS_MESSAGE } from '@/lib/freeDemo';
 
 const PAGE = 50;
 
@@ -100,7 +101,7 @@ export default function SmartInbox() {
             <tbody>
               {visible.map((r) => (
                 <tr key={r.email_id}>
-                  <td className="mono nowrap">{r.analysed ? <Link href={`/cases/${r.email_id}?from=inbox`}>{r.email_id}</Link> : r.email_id}</td>
+                  <td className="mono nowrap"><Link href={`/cases/${r.email_id}?from=inbox`} prefetch={false}>{r.email_id}</Link></td>
                   <td>
                     <div className="truncate" title={r.subject}>{r.subject}</div>
                     {r.headline ? <div className="small muted truncate">{r.headline}</div> : <div className="small muted truncate">{r.body_preview}</div>}
@@ -111,8 +112,8 @@ export default function SmartInbox() {
                   <td><StatusBadge ui={r.ui_status} status={r.status} /></td>
                   <td className="right small">{pct(r.confidence)}</td>
                   <td className="right nowrap">
-                    {r.analysed ? <Link href={`/cases/${r.email_id}?from=inbox`} className="btn btn-sm">Open</Link> : null}{' '}
-                    <button className="btn btn-sm btn-primary" onClick={() => analyse(r.email_id)} disabled={busy === r.email_id}>
+                    <Link href={`/cases/${r.email_id}?from=inbox`} prefetch={false} className="btn btn-sm">Open</Link>{' '}
+                    <button className="btn btn-sm btn-primary" onClick={() => analyse(r.email_id)} disabled={FREE_DEMO || busy === r.email_id} title={FREE_DEMO ? FREE_DEMO_ANALYSIS_MESSAGE : undefined}>
                       {busy === r.email_id ? 'Analysing…' : r.analysed ? 'Re-analyse' : 'Analyse'}
                     </button>
                   </td>

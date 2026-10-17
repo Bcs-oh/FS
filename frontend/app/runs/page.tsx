@@ -7,6 +7,7 @@ import { RunDonut } from '@/components/RunDonut';
 import { api, post, del, fmtTime, type RunState } from '@/lib/api';
 import { useRunPulse, useLiveRefresh } from '@/lib/useLiveRefresh';
 import { useLanguage } from '@/components/LanguageProvider';
+import { FREE_DEMO, FREE_DEMO_ANALYSIS_MESSAGE } from '@/lib/freeDemo';
 
 export default function BatchRun() {
   const [runs, setRuns] = useState<RunState[]>([]);
@@ -98,11 +99,11 @@ export default function BatchRun() {
       <div className="page-head">
         <div>
           <h1>Batch Run</h1>
-          <div className="sub">Process the complete inbox, watch progress, retry failures and export the submission JSON.</div>
+          <div className="sub">{FREE_DEMO ? 'Batch analysis is disabled in this free demo. You can browse original emails in Smart Inbox.' : 'Process the complete inbox, watch progress, retry failures and export the submission JSON.'}</div>
         </div>
         <div className="toolbar" style={{ marginBottom: 0 }}>
-          <label className="small"><input type="checkbox" checked={force} onChange={(e) => setForce(e.target.checked)} /> re-analyse already analysed emails</label>
-          <button className="btn btn-primary" onClick={start} disabled={busy || !!active}>{active ? 'Running…' : 'Run full inbox'}</button>
+          <label className="small"><input type="checkbox" checked={force} disabled={FREE_DEMO} onChange={(e) => setForce(e.target.checked)} /> re-analyse already analysed emails</label>
+          <button className="btn btn-primary" onClick={start} disabled={FREE_DEMO || busy || !!active} title={FREE_DEMO ? FREE_DEMO_ANALYSIS_MESSAGE : undefined}>{active ? 'Running…' : 'Run full inbox'}</button>
           <button className={confirmClear ? 'btn btn-sm btn-danger' : 'btn btn-sm'}
                   onClick={clearAll} disabled={clearing || !!active}
                   title="Removes every stored analysis result, on disk as well as in memory">
@@ -169,7 +170,7 @@ export default function BatchRun() {
                           <tr key={f.email_id}>
                             <td className="mono">{f.email_id}</td>
                             <td className="small">{f.error}</td>
-                            <td className="right"><button className="btn btn-sm" onClick={() => retry(latest.run_id, f.email_id)}>Retry</button></td>
+                            <td className="right"><button className="btn btn-sm" onClick={() => retry(latest.run_id, f.email_id)} disabled={FREE_DEMO} title={FREE_DEMO ? FREE_DEMO_ANALYSIS_MESSAGE : undefined}>Retry</button></td>
                           </tr>
                         ))}
                       </tbody>
@@ -179,7 +180,7 @@ export default function BatchRun() {
               ) : null}
             </>
           ) : (
-            <p className="muted">Start a run to process all emails. Already analysed emails are skipped unless you tick re-analyse.</p>
+            <p className="muted">{FREE_DEMO ? FREE_DEMO_ANALYSIS_MESSAGE : 'Start a run to process all emails. Already analysed emails are skipped unless you tick re-analyse.'}</p>
           )}
         </div>
         <div>

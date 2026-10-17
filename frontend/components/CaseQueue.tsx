@@ -48,9 +48,9 @@ export default function CaseQueue({ current, source = 'review' }: { current: str
 
   const list = useMemo(() => {
     if (!rows) return [];
-    // From the inbox the rail is the inbox: every analysed email, in inbox order, so the
+    // From the inbox the rail is the inbox: every email, in inbox order, so the
     // arrows walk the list the reader was reading.
-    if (source === 'inbox') return rows.filter((r) => r.analysed || r.email_id === current);
+    if (source === 'inbox') return rows;
     // From the review queue it is the open cases. The case being looked at stays in the
     // list even once it is resolved, so the position indicator and the two arrows do not
     // jump while it is open.
@@ -103,7 +103,7 @@ export default function CaseQueue({ current, source = 'review' }: { current: str
         <div className="cq-empty">Loading…</div>
       ) : list.length === 0 ? (
         <div className="cq-empty">
-          {source === 'inbox' ? 'Nothing analysed yet.' : 'Nothing is waiting for a decision.'}
+          {source === 'inbox' ? 'No emails in this inbox.' : 'Nothing is waiting for a decision.'}
         </div>
       ) : (
         <div className="cq-list">
@@ -111,6 +111,7 @@ export default function CaseQueue({ current, source = 'review' }: { current: str
             <Link
               key={r.email_id}
               href={`/cases/${r.email_id}?from=${source}`}
+              prefetch={false}
               className={`cq-item${r.email_id === current ? ' is-current' : ''}`}
               aria-current={r.email_id === current ? 'true' : undefined}
             >
