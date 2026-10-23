@@ -10,7 +10,8 @@
 - Render 新工作区：`FreightSentinel Free`，Hobby，控制台已确认 `No card on file`。
 - 后端：`freightsentinel-personal-free`，Free，无持久磁盘，手动部署。
 - 已上线地址：[个人后端](https://freightsentinel-personal-free.onrender.com)。`/health` 已返回 `status: ok`、520 封邮件，主 AI 和资深复核均关闭。
-- Cloudflare 账号已确认 Workers Free；前端发布等待 GitHub 身份验证完成，尚无前端发布 URL。
+- Cloudflare 账号已确认 Workers Free；前端已发布：[FreightSentinel 免费试用站](https://freightsentinel-demo.pages.dev/)。
+- 已通过公开页面确认首页、520 封邮件列表、`email_004` 详情和附件原文能够读取。AI 和批处理保持关闭。
 - `frontend/wrangler.jsonc` 已记录上述公开后端 origin，作为 Pages Functions 的 `BACKEND_URL`。
 
 ## 1. 零费用成立的条件
