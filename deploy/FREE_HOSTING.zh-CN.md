@@ -2,7 +2,16 @@
 
 目标：Cloudflare Pages 提供前端和同源 API 转发；Render Free 运行现有 Python 后端。模型训练实验台继续在本机运行。
 
-这是带免费额度、休眠和临时存储限制的试用配置。当前只准备本地代码；账号、账单状态和实际部署结果需要在控制台确认。
+这是带免费额度、休眠和临时存储限制的试用配置。
+
+## 当前发布状态（2026-10-24）
+
+- 代码分支：`Bcs-oh/FS` 的 `codex/free-hosting`。
+- Render 新工作区：`FreightSentinel Free`，Hobby，控制台已确认 `No card on file`。
+- 后端：`freightsentinel-personal-free`，Free，无持久磁盘，手动部署。
+- 已上线地址：[个人后端](https://freightsentinel-personal-free.onrender.com)。`/health` 已返回 `status: ok`、520 封邮件，主 AI 和资深复核均关闭。
+- Cloudflare 账号已确认 Workers Free；前端发布等待 GitHub 身份验证完成，尚无前端发布 URL。
+- `frontend/wrangler.jsonc` 已记录上述公开后端 origin，作为 Pages Functions 的 `BACKEND_URL`。
 
 ## 1. 零费用成立的条件
 
@@ -65,8 +74,8 @@
 - Build command：`npm run build:pages`。
 - Build output directory：`out`。
 - 构建环境变量：`NEXT_PUBLIC_FREE_DEMO=1`。
-- Pages Functions 运行环境变量：`BACKEND_URL` 设置为第 3 步确认的后端 HTTPS origin，不带 `/api`，例如 `https://<实际服务名称>.onrender.com`。
-- Production 与 Preview 环境分别配置所需变量，修改后重新部署。
+- Pages Functions 的 `BACKEND_URL` 已在 `frontend/wrangler.jsonc` 的 `vars` 中配置，生产与预览环境共用该公开后端 origin。更换后端时同步修改此值，不带 `/api`。
+- Wrangler 文件是 Pages 配置的来源；不要在控制台额外创建同名且冲突的绑定。若日后为 Preview 设置独立配置，需要分别维护对应环境的变量。
 
 不要把 `AI_API_KEY` 或其他密钥填入任何 `NEXT_PUBLIC_*` 环境变量。
 
